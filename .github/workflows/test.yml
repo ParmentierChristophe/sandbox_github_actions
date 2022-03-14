@@ -47,3 +47,14 @@ jobs:
           content="${content// /}"
           echo "::set-output name=content::$content"
       - run : echo ${{ steps.read_topics.outputs.content }}
+
+  register-topics:
+    runs-on: ubuntu-latest
+    name: Register topic
+    needs: [ prepare-data ]
+    strategy:
+      matrix:
+        topics: ${{ fromJson(needs.prepare-data.outputs.topics) }}
+    steps:
+      - name: 'Run Kafka CLI image'
+        run: echo ${{ matrix.topics.topic}}
