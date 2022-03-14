@@ -1,6 +1,10 @@
 name: GitHub Actions Demo
-on: 
+on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Source environment(dev, uat1, preprod)'
+        required: true
 
 env:
   DAY_OF_WEEK: Monday
@@ -46,6 +50,7 @@ jobs:
           echo "${content// /}"
           content="${content// /}"
           echo "::set-output name=content::$content"
+          content="${content//sourceEnvironment/${{ github.event.inputs.environment }}}"
       - run : echo ${{ steps.read_topics.outputs.content }}
 
   register-topics:
