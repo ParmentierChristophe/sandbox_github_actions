@@ -1,0 +1,9 @@
+[
+    {
+      "topic": "toto",
+      "replication-factor": 3,
+      "partitions": 1,
+      "policy": "compact",
+      "retention": 1209600000
+    }
+  ]

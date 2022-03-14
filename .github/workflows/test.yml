@@ -1,6 +1,11 @@
 name: GitHub Actions Demo
 on: 
   workflow_dispatch:
+
+env:
+  DAY_OF_WEEK: Monday
+
+
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
@@ -12,7 +17,27 @@ jobs:
         uses: actions/checkout@v2
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - run: echo "$DAY_OF_WEEK"
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+
+  prepare-data:
+    runs-on: [ self-hosted, Linux, standard ]
+    name: Prepare Data
+    outputs:
+      topics: ${{ steps.read_topics.outputs.content }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: 'Read list of topics'
+        id: read_topics
+        run: |
+          content="$(cat ./docs/create.json)"
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/}"
+          content="${content//$'\r'/}"
+          content="${content// /}"
+          echo "::set-output name=content::$content"
