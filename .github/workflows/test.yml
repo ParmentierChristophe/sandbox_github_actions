@@ -40,4 +40,4 @@ jobs:
           content="${content//$'\n'/}"
           content="${content//$'\r'/}"
           content="${content// /}"
-          echo "::set-output name=content::$content"
+          echo "$content"
