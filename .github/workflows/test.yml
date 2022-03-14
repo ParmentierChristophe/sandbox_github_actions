@@ -35,10 +35,15 @@ jobs:
       - name: 'Read list of topics'
         id: read_topics
         run: |
+          echo "$(cat ./docs/create.json)"
           content="$(cat ./docs/create.json)"
+          echo "${content//'%'/'%25'}"
           content="${content//'%'/'%25'}"
+          echo "${content//$'\n'/}"
           content="${content//$'\n'/}"
+          echo "${content//$'\r'/}"
           content="${content//$'\r'/}"
+          echo "${content// /}"
           content="${content// /}"
           echo "::set-output name=content::$content"
       - run : echo ${{ steps.read_topics.outputs.content }}
