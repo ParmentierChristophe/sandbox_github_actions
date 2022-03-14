@@ -24,7 +24,7 @@ jobs:
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
   prepare-data:
-    runs-on: [ Linux, standard ]
+    runs-on: ubuntu-latest
     name: Prepare Data
     outputs:
       topics: ${{ steps.read_topics.outputs.content }}
