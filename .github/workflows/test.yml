@@ -41,4 +41,4 @@ jobs:
           content="${content//$'\r'/}"
           content="${content// /}"
           echo "::set-output name=content::$content"
-      - run : echo "$content"
+      - run : echo ${{ steps.read_topics.outputs.content }}
