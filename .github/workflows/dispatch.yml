@@ -12,7 +12,7 @@ on:
 
 jobs:
   publish_release:
-    runs-on: [ self-hosted, Linux, standard ]
+    runs-on: [ Linux, standard ]
     environment: ${{ inputs.bu }}
     steps:
       - uses: actions/checkout@v3
