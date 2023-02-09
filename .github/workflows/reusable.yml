@@ -1,7 +1,14 @@
 name : 🚨 (WIP) Do not use
 on:
   workflow_call:
-
+    inputs:
+      bu:
+        required: true
+        type: string
+      version_to_deploy:
+        required: true
+        type: string
+        
 env:
   URL: https://www.google.com
   PARAMS: test
