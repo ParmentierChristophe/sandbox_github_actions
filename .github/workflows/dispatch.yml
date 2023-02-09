@@ -2,13 +2,6 @@ name: ERDFFD
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on:
   workflow_dispatch:
-    inputs:
-      bu:
-        required: true
-        type: string
-      version_to_deploy:
-        required: true
-        type: string
   
 jobs:
   deploy-uat-lmfr:
