@@ -1,0 +1,36 @@
+name : 🚨 (WIP) Do not use
+
+on:
+  workflow_call:
+
+env:
+  URL: https://www.google.com
+  PARAMS: test
+
+jobs:
+  reusable_test:
+    name: test reusable action
+    runs-on: [ self-hosted, Linux, standard ]
+    environment: DEV
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: je retrouve les vars
+        id: test
+        with:
+          url: ${{ env.URL }}
+          method: approle
+          namespace: ${{ env.PARAMS }}
+
+      - name: 📢 Send test
+        run: |
+            {
+              "team": "tmlker",
+              "contact": "@rekm",
+              "subject": "${{ inputs.bu }} - MàJ applicative",
+              "description": "${{ inputs.version_to_deploy }}",
+              "project": "-",
+              "risk": "Low",
+              "unavailability": "No",
+              "date": "Now"
+            }
