@@ -17,8 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Send custom test
-        uses: ./.github/workflows/reusable.yml
-        with:
-          bu: ${{inputs.bu}}
-          version_to_deploy: ${{inputs.version_to_deploy}}
+        run: |
+          echo 'test'
 
