@@ -1,6 +1,6 @@
 name : 🚨 (WIP) Do not use
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       bu:
         required: true
