@@ -1,0 +1,25 @@
+name: 🤖 Deploy TEST
+
+on:
+  workflow_call:
+    inputs:
+      bu:
+        required: true
+        type: string
+      version_to_deploy:
+        required: true
+        type: string
+
+jobs:
+  
+  publish_release:
+    runs-on: [ self-hosted, Linux, standard ]
+    environment: ${{ inputs.bu }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Send custom test
+        uses: ./.github/workflows/reusable.yml
+        with:
+          bu: ${{inputs.bu}}
+          version_to_deploy: ${{inputs.version_to_deploy}}
+
