@@ -1,12 +1,12 @@
 name : 🚨 (WIP) Do not use
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       bu:
-        required: true
+        required: false
         type: string
       version_to_deploy:
-        required: true
+        required: false
         type: string
         
 env:
