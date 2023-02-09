@@ -3,9 +3,11 @@ on:
   workflow_call:
     inputs:
       bu:
+        default: test
         required: false
         type: string
       version_to_deploy:
+        default: erj
         required: false
         type: string
         
