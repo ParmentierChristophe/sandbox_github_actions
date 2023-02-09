@@ -16,12 +16,6 @@ jobs:
 
       - name: je retrouve les vars
         id: test
-        with:
-          url: ${{ env.URL }}
-          method: approle
-          namespace: ${{ env.PARAMS }}
-
-      - name: 📢 Send test
         run: |
             {
               "team": "tmlker",
@@ -31,5 +25,8 @@ jobs:
               "project": "-",
               "risk": "Low",
               "unavailability": "No",
-              "date": "Now"
+              "date": "Now",
+              "url": "${{ env.URL }}",
+              "method": "approle",
+              "namespace": "${{ env.PARAMS }}"
             }
