@@ -9,7 +9,7 @@ env:
 jobs:
   reusable_test:
     name: test reusable action
-    runs-on: [ self-hosted, Linux, standard ]
+    runs-on: [ Linux, standard ]
     environment: DEV
     steps:
       - uses: actions/checkout@v3
