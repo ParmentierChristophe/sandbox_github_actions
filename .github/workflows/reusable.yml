@@ -2,39 +2,16 @@ name : 🚨 (WIP) Do not use
 on:
   workflow_call:
     inputs:
-      bu:
-        default: test
+      username:
+        description: 'A username passed from the caller workflow'
+        default: 'john-doe'
         required: false
         type: string
-      version_to_deploy:
-        default: erj
-        required: false
-        type: string
-        
-env:
-  URL: https://www.google.com
-  PARAMS: test
 
 jobs:
-  reusable_test:
-    name: test reusable action
-    runs-on: [ Linux, standard ]
-    environment: DEV
-    steps:
-      - uses: actions/checkout@v3
+  print-username:
+    runs-on: ubuntu-latest
 
-      - name: je retrouve les vars
-        run: |
-            {
-              "team": "tmlker",
-              "contact": "@rekm",
-              "subject": "${{ inputs.bu }} - MàJ applicative",
-              "description": "${{ inputs.version_to_deploy }}",
-              "project": "-",
-              "risk": "Low",
-              "unavailability": "No",
-              "date": "Now",
-              "url": "${{ env.URL }}",
-              "method": "approle",
-              "namespace": "${{ env.PARAMS }}"
-            }
+    steps:
+      - name: Print the input name to STDOUT
+        run: echo The username is ${{ inputs.bu }}
