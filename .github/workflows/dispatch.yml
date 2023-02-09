@@ -15,6 +15,5 @@ jobs:
     runs-on: [ Linux, standard ]
     steps:
       - name: Send custom test
-        run: |
-          echo 'test'
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
 
