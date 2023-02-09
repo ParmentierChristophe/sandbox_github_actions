@@ -2,7 +2,7 @@ name : 🚨 (WIP) Do not use
 on:
   workflow_call:
     inputs:
-      username:
+      bu:
         description: 'A username passed from the caller workflow'
         default: 'john-doe'
         required: false
