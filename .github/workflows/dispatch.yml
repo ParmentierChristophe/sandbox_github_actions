@@ -13,7 +13,7 @@ on:
 jobs:
   deploy-uat-lmfr:
     name: UAT LMFR
-    uses: ./.github/workflows/reusable-deploy.yml
+    uses: ./.github/workflows/reusable.yml
     with:
       bu: ${{inputs.bu}}
       version_to_deploy: ${{inputs.version_to_deploy}}
