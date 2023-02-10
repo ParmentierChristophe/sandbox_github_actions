@@ -11,8 +11,8 @@ on:
         type: string
   
 jobs:
-  deploy-uat-lmfr:
-    name: UAT LMFR
+  deploy:
+    name: Deploy
     uses: ./.github/workflows/reusable.yml
     with:
       bu: ${{inputs.bu}}
