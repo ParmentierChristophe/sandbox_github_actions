@@ -6,9 +6,6 @@ on:
       bu:
         required: false
         type: string
-      version_to_deploy:
-        required: false
-        type: string
   
 jobs:
   deploy:
@@ -16,5 +13,5 @@ jobs:
     uses: ./.github/workflows/reusable.yml
     with:
       bu: ${{inputs.bu}}
-      version_to_deploy: ${{inputs.version_to_deploy}}
+      version_to_deploy: toto
       
