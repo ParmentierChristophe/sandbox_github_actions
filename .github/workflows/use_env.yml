@@ -1,0 +1,32 @@
+name: 🗝 ENV
+
+on:
+  workflow_dispatch:
+      inputs:
+        version:
+          required: true
+          type: string
+          description: the version you wish to deploy on components (e.g. 2.1.4)
+
+jobs:
+  Create_and_update_keys_and_Deploy:
+    runs-on: [ Linux, standard ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Determine the environment
+        id: set_environment
+        run: echo "::set-output name=environment::${{ github.event.inputs.environment }}"
+        
+      - name: Set environment-specific variables
+        run: |
+          environment=${{ steps.set_environment.outputs.environment }}
+          if [[ "$environment" == "DEV" ]]; then
+            export MY_VAR="foo"
+          elif [[ "$environment" == "PROD" ]]; then
+            export MY_VAR="bar"
+          fi
+
+      - name: echo var
+        run: echo ${{ env.MY_VAR }}
