@@ -64,23 +64,22 @@ jobs:
                   "id": "id-app2",
                 }
               ]
-
     outputs:
       env: ${{ steps.set_output.outputs.env }}
       apikey_path: ${{ steps.set_output.outputs.apikey_path }}
-      environments: ${{ steps.set_output.outputs.environments }}
+      business_units: ${{ steps.set_output.outputs.business_units }}
       contexts: ${{ steps.set_output.outputs.contexts }}
+      service_accounts: ${{ steps.set_output.outputs.service_accounts }}
     steps:
       - name: Setup Environment
         if: ${{ matrix.env == github.event.inputs.env }}
         run: |
           echo "Setting up environment for ${{ matrix.env }}"
-          echo "ENV=${{ matrix.env }}" >> $GITHUB_OUTPUT
-          echo "APIKEY_PATH=${{ matrix.apikey_path }}" >> $GITHUB_OUTPUT
-          echo "BUSINESS_UNITS=${{ matrix.business_units }}" >> $GITHUB_OUTPUT
-          echo "CONTEXTS=${{ matrix.contexts }}" >> $GITHUB_OUTPUT
-          echo "SA=${{ toJson(matrix.service_accounts) }}" >> $GITHUB_OUTPUT
-
+          echo "env=${{ matrix.env }}" >> $GITHUB_OUTPUT
+          echo "apikey_path=${{ matrix.apikey_path }}" >> $GITHUB_OUTPUT
+          echo "business_units=${{ matrix.business_units }}" >> $GITHUB_OUTPUT
+          echo "contexts=${{ matrix.contexts }}" >> $GITHUB_OUTPUT
+          echo "service_accounts=${{ toJson(matrix.service_accounts) }}" >> $GITHUB_OUTPUT
         id: set_output
 
   echo-env:
