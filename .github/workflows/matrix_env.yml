@@ -79,7 +79,7 @@ jobs:
                 echo "apikey_path=${{ matrix.apikey_path }}" >> $GITHUB_OUTPUT
                 echo "business_units=${{ matrix.business_units }}" >> $GITHUB_OUTPUT
                 echo "contexts=${{ matrix.contexts }}" >> $GITHUB_OUTPUT
-                SERVICE_ACCOUNTS_JSON=$(echo '${{ toJson(matrix.service_accounts) }}' | jq @json)
+                SERVICE_ACCOUNTS_JSON=$(echo '${{ toJson(matrix.service_accounts) }}' | jq @json | tr -d '\n')
                 echo "service_accounts=$SERVICE_ACCOUNTS_JSON" >> $GITHUB_OUTPUT
               id: set_output
 
