@@ -95,3 +95,6 @@ jobs:
                   echo "BUSINESS_UNITS: ${{ needs.set-env.outputs.business_units }}"
                   echo "Contexts: ${{ needs.set-env.outputs.contexts }}"
                   echo "SA: ${{ fromJson(needs.set-env.outputs.service_accounts) }}"
+                  test=$(echo '${{ needs.set-env.outputs.contexts }}' | jq -r '.[]')
+                  echo $test
+
