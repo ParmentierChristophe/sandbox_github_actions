@@ -27,11 +27,11 @@ jobs:
               [
                 {
                   "name": "name-app",
-                  "id": "id-app",
+                  "id": "id-app"
                 },
                 {
                   "name": "name-app2",
-                  "id": "id-app2",
+                  "id": "id-app2"
                 }
               ]
           - env: STAGING
@@ -42,11 +42,11 @@ jobs:
               [
                 {
                   "name": "name-app",
-                  "id": "id-app",
+                  "id": "id-app"
                 },
                 {
                   "name": "name-app2",
-                  "id": "id-app2",
+                  "id": "id-app2"
                 }
               ]
           - env: PROD
@@ -57,11 +57,11 @@ jobs:
               [
                 {
                   "name": "name-app",
-                  "id": "id-app",
+                  "id": "id-app"
                 },
                 {
                   "name": "name-app2",
-                  "id": "id-app2",
+                  "id": "id-app2"
                 }
               ]
     outputs:
