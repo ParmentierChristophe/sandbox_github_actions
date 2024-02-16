@@ -79,18 +79,8 @@ jobs:
                 echo "apikey_path=${{ matrix.apikey_path }}" >> $GITHUB_OUTPUT
                 echo "business_units=${{ matrix.business_units }}" >> $GITHUB_OUTPUT
                 echo "contexts=${{ matrix.contexts }}" >> $GITHUB_OUTPUT
-            
-                # Show the content of service_accounts before jq
-                echo "service_accounts_before_jq=$service_accounts" >> $GITHUB_OUTPUT
-            
-                # Extract and remove newlines from service_accounts
-                jq -r '.[]' <<< "${{ matrix.service_accounts }}" | tr '\n' ' ' >> $GITHUB_OUTPUT
-            
-                # Alternatively, if you need service_accounts as a single JSON string:
-                # echo "service_accounts=$(jq -r '.' <<< "${{ matrix.service_accounts }}" | tr '\n' ' ')" >> $GITHUB_OUTPUT
-            
-                # Show the content of service_accounts after jq
-                echo "service_accounts_after_jq=$(cat $GITHUB_OUTPUT | grep 'service_accounts=')" >> $GITHUB_OUTPUT
+                SERVICE_ACCOUNTS_JSON=$(echo '${{ toJson(matrix.service_accounts) }}' | sed ':a;N;$!ba;s/\n//g')
+                echo "service_accounts=$SERVICE_ACCOUNTS_JSON" >> $GITHUB_OUTPUT
               id: set_output
 
     echo-env:
