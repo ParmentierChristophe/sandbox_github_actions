@@ -80,6 +80,8 @@ jobs:
                   echo "business_units=${{ matrix.business_units }}" >> $GITHUB_OUTPUT
                   echo "contexts=${{ matrix.contexts }}" >> $GITHUB_OUTPUT
                   echo "service_accounts=$(jq -r '.' <<< "${{ matrix.service_accounts }}" | tr '\n' ' ')" >> $GITHUB_OUTPUT
+                  echo "Extracted service_accounts:"
+                  cat $GITHUB_OUTPUT
               id: set_output
 
     echo-env:
