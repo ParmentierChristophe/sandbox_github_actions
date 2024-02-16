@@ -79,7 +79,7 @@ jobs:
                   echo "apikey_path=${{ matrix.apikey_path }}" >> $GITHUB_OUTPUT
                   echo "business_units=${{ matrix.business_units }}" >> $GITHUB_OUTPUT
                   echo "contexts=${{ matrix.contexts }}" >> $GITHUB_OUTPUT
-                  echo "service_accounts=${{ toJson(matrix.service_accounts) }}" >> $GITHUB_OUTPUT
+                  echo "service_accounts=${{ toJson(matrix.service_accounts) }} | jq -r ." >> $GITHUB_OUTPUT
               id: set_output
 
     echo-env:
@@ -93,4 +93,4 @@ jobs:
                   echo "API Key Path: ${{ needs.set-env.outputs.apikey_path }}"
                   echo "BUSINESS_UNITS: ${{ needs.set-env.outputs.business_units }}"
                   echo "Contexts: ${{ needs.set-env.outputs.contexts }}"
-                  echo "SA: ${{ fromJson(needs.set-env.outputs.service_accounts) | regex_replace('\/n|^\n|\n$/', '') }}"
+                  echo "SA: ${{ fromJson(needs.set-env.outputs.service_accounts) }}"
