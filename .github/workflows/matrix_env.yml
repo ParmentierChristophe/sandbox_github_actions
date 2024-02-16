@@ -93,4 +93,4 @@ jobs:
                   echo "API Key Path: ${{ needs.set-env.outputs.apikey_path }}"
                   echo "BUSINESS_UNITS: ${{ needs.set-env.outputs.business_units }}"
                   echo "Contexts: ${{ needs.set-env.outputs.contexts }}"
-                  echo "SA: ${{ fromJson(needs.set-env.outputs.service_accounts) }}"
+                  echo "SA: ${{ needs.set-env.outputs.service_accounts }}"
