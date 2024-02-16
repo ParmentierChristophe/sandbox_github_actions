@@ -1,0 +1,82 @@
+name: Environment Test Workflow Integration with Matrix Strategy
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        required: true
+        description: choose env
+        options:
+          - DEV
+          - STAGING
+          - PROD
+
+jobs:
+  set-env:
+    runs-on: [ self-hosted, Linux, service ]
+    strategy:
+      matrix:
+        include:
+          - env: DEV
+            apikey_path: "path/dev/to" # pragma: allowlist secret
+            environments: '["bu1", "bu2"]'
+            contexts: '["sit"]'
+            service_accounts: |
+              [
+                {
+                  "name": "name-app",
+                  "id": "id-app",
+                },
+                {
+                  "name": "name-app2",
+                  "id": "id-app2",
+                }
+              ]
+          - env: STAGING
+            apikey_path: "path/uat/to" # pragma: allowlist secret
+            environments: '["bu1", "bu3"]'
+            contexts: '["uat", "pprod"]'
+            service_accounts: |
+              [
+                {
+                  "name": "name-app",
+                  "id": "id-app",
+                },
+                {
+                  "name": "name-app2",
+                  "id": "id-app2",
+                }
+              ]
+          - env: PROD
+            apikey_path: "path/prod/to" # pragma: allowlist secret
+            environments: '["bu2", "bu3"]'
+            contexts: '["prod"]'
+            service_accounts: |
+              [
+                {
+                  "name": "name-app",
+                  "id": "id-app",
+                },
+                {
+                  "name": "name-app2",
+                  "id": "id-app2",
+                }
+              ]
+    outputs:
+      env: ${{ matrix.env }}
+      apikey_path: ${{ matrix.apikey_path }}
+      environments: ${{ matrix.environments }}
+      contexts: ${{ matrix.contexts }}
+      service_accounts: ${{ toJSON(matrix.service_accounts) }}
+    steps:
+      - run: echo "Setting up environment for ${{ matrix.env }}"
+
+
+  echo-env:
+    needs: set-env
+    runs-on: [ self-hosted, Linux, service ]
+    if: ${{ needs.set-env.outputs.env == github.event.inputs.env }}
+    steps:
+      - name: Echo env
+        run: echo "Environment is ${{ needs.set-env.outputs.env }}"
