@@ -79,10 +79,8 @@ jobs:
                   echo "apikey_path=${{ matrix.apikey_path }}" >> $GITHUB_OUTPUT
                   echo "business_units=${{ matrix.business_units }}" >> $GITHUB_OUTPUT
                   echo "contexts=${{ matrix.contexts }}" >> $GITHUB_OUTPUT
-                  jq -r '.[]' <<< "${{ matrix.service_accounts }}" | \
-                    while read -r account; do
-                      echo "service_accounts_array+=($account)" >> $GITHUB_OUTPUT
-                    done
+                  jq -r '.[]' <<< "${{ matrix.service_accounts }}" | tr '\n' ' ' >> $GITHUB_OUTPUT
+
               id: set_output
 
     echo-env:
