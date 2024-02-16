@@ -23,14 +23,47 @@ jobs:
             apikey_path: "path/dev/to"
             business_units: '["bu1", "bu2"]'
             contexts: '["sit"]'
+            service_accounts: |
+              [
+                {
+                  "name": "name-app",
+                  "id": "id-app",
+                },
+                {
+                  "name": "name-app2",
+                  "id": "id-app2",
+                }
+              ]
           - env: STAGING
             apikey_path: "path/uat/to"
             business_units: '["bu1", "bu3"]'
             contexts: '["uat", "pprod"]'
+            service_accounts: |
+              [
+                {
+                  "name": "name-app",
+                  "id": "id-app",
+                },
+                {
+                  "name": "name-app2",
+                  "id": "id-app2",
+                }
+              ]
           - env: PROD
             apikey_path: "path/prod/to"
             business_units: '["bu2", "bu3"]'
             contexts: '["prod"]'
+            service_accounts: |
+              [
+                {
+                  "name": "name-app",
+                  "id": "id-app",
+                },
+                {
+                  "name": "name-app2",
+                  "id": "id-app2",
+                }
+              ]
 
     outputs:
       env: ${{ steps.set_output.outputs.env }}
@@ -46,6 +79,8 @@ jobs:
           echo "APIKEY_PATH=${{ matrix.apikey_path }}" >> $GITHUB_OUTPUT
           echo "BUSINESS_UNITS=${{ matrix.business_units }}" >> $GITHUB_OUTPUT
           echo "CONTEXTS=${{ matrix.contexts }}" >> $GITHUB_OUTPUT
+          echo "SA=${{ toJson(matrix.service_accounts) }}" >> $GITHUB_OUTPUT
+
         id: set_output
 
   echo-env:
@@ -55,8 +90,10 @@ jobs:
     steps:
       - name: Echo Environment Configuration
         run: |
-          echo "Environment: ${{ needs.set-env.outputs.env }}"
-          echo "API Key Path: ${{ needs.set-env.outputs.apikey_path }}"
-          echo "Environments: ${{ needs.set-env.outputs.environments }}"
-          echo "Contexts: ${{ needs.set-env.outputs.contexts }}"
+          echo "Environment: ${{ needs.set-env.outputs.ENV }}"
+          echo "API Key Path: ${{ needs.set-env.outputs.API_KEY }}"
+          echo "BUSINESS_UNITS: ${{ needs.set-env.outputs.BUSINESS_UNITS }}"
+          echo "Contexts: ${{ needs.set-env.outputs.CONTEXTS }}"
+          echo "SA: ${{ needs.set-env.outputs.SA }}"
+
 
