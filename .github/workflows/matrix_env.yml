@@ -43,7 +43,9 @@ jobs:
                   echo "Setting up environment for ${{ matrix.env }}"
                   echo "env=${{ matrix.env }}" >> $GITHUB_OUTPUT
                   echo "apikey_path=${{ matrix.apikey_path }}" >> $GITHUB_OUTPUT
-                  echo "business_units=${{ matrix.business_units }}" >> $GITHUB_OUTPUT
+                  BUSINESS_UNITS_JSON=$(echo '${{ toJson(matrix.business_units) }}' | jq -r @json)
+                  echo "business_units=$BUSINESS_UNITS_JSON" >> $GITHUB_OUTPUT
+                  # echo "business_units=${{ matrix.business_units }}" >> $GITHUB_OUTPUT
                   SERVICE_ACCOUNTS_JSON=$(echo '${{ toJson(matrix.service_accounts) }}' | jq -r @json)
                   echo "service_accounts=$SERVICE_ACCOUNTS_JSON" >> $GITHUB_OUTPUT
               id: set_output
@@ -59,7 +61,10 @@ jobs:
                   echo "API Key Path: ${{ needs.set-env.outputs.apikey_path }}"
                   echo "BUSINESS_UNITS_JSON: ${{ needs.set-env.outputs.business_units }}"
                   echo "SA: ${{ fromJson(needs.set-env.outputs.service_accounts) }}"
-                  BUSINESS_UNITS_JSON="${{ needs.set-env.outputs.business_units }}"
+                  BUSINESS_UNITS_JSON="${{ fromJson(needs.set-env.outputs.business_units) }}"
+                  for BU in $BUSINESS_UNITS_JSON; do
+                      echo "BU: $BU"
+                  done
                   echo "$BUSINESS_UNITS_JSON" | jq -r '.[]' | while read BU; do
                       echo "BU: $BU"
                   done
