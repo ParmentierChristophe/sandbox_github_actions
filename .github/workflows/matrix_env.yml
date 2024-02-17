@@ -21,7 +21,7 @@ jobs:
                 include:
                     - env: DEV
                       apikey_path: 'path/dev/to'
-                      business_units: '[bu1, bu2]'
+                      business_units: [bu1, bu2]
                       contexts: '["sit"]'
                       service_accounts: |
                           [
