@@ -21,7 +21,7 @@ jobs:
                 include:
                     - env: DEV
                       apikey_path: 'path/dev/to'
-                      business_units: [bu1 bu2]
+                      business_units: [bu1, bu2]
                       contexts: '["sit"]'
                       service_accounts: |
                           [
@@ -77,7 +77,7 @@ jobs:
                   echo "Setting up environment for ${{ matrix.env }}"
                   echo "env=${{ matrix.env }}" >> $GITHUB_OUTPUT
                   echo "apikey_path=${{ matrix.apikey_path }}" >> $GITHUB_OUTPUT
-                  echo "business_units=${{ toJson(matrix.business_units) }}" >> $GITHUB_OUTPUT
+                  echo "business_units=${{ matrix.business_units }}" >> $GITHUB_OUTPUT
                   # CONTEXTS_JSON=$(echo '${{ needs.set-env.outputs.contexts }}' | jq '.[]')
                   # BUSINESS_UNITS_JSON=$(echo '${{ matrix.business_units }}' | jq '.[]')
                   SERVICE_ACCOUNTS_JSON=$(echo '${{ toJson(matrix.service_accounts) }}' | jq -r @json)
