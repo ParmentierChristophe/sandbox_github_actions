@@ -74,15 +74,15 @@ jobs:
             - name: Setup Environment
               if: ${{ matrix.env == github.event.inputs.env }}
               run: |
-                echo "Setting up environment for ${{ matrix.env }}"
-                echo "env=${{ matrix.env }}" >> $GITHUB_OUTPUT
-                echo "apikey_path=${{ matrix.apikey_path }}" >> $GITHUB_OUTPUT
-                CONTEXTS_JSON=$(echo '${{ needs.set-env.outputs.contexts }}' | jq '.[]')
-                BUSINESS_UNITS_JSON=$(echo '${{ toJson(matrix.business_units) }}' | jq '.[]')
-                SERVICE_ACCOUNTS_JSON=$(echo '${{ toJson(matrix.service_accounts) }}' | jq -r @json)
-                echo "service_accounts=$SERVICE_ACCOUNTS_JSON" >> $GITHUB_OUTPUT
-                echo "business_units=$BUSINESS_UNITS_JSON" >> $GITHUB_OUTPUT
-                echo "contexts=$CONTEXTS_JSON" >> $GITHUB_OUTPUT
+                  echo "Setting up environment for ${{ matrix.env }}"
+                  echo "env=${{ matrix.env }}" >> $GITHUB_OUTPUT
+                  echo "apikey_path=${{ matrix.apikey_path }}" >> $GITHUB_OUTPUT
+                  # CONTEXTS_JSON=$(echo '${{ needs.set-env.outputs.contexts }}' | jq '.[]')
+                  BUSINESS_UNITS_JSON=$(echo '${{ toJson(matrix.business_units) }}' | jq '.[]')
+                  SERVICE_ACCOUNTS_JSON=$(echo '${{ toJson(matrix.service_accounts) }}' | jq -r @json)
+                  echo "service_accounts=$SERVICE_ACCOUNTS_JSON" >> $GITHUB_OUTPUT
+                  echo "business_units=$BUSINESS_UNITS_JSON" >> $GITHUB_OUTPUT
+                  # echo "contexts=$CONTEXTS_JSON" >> $GITHUB_OUTPUT
               id: set_output
 
     echo-env:
@@ -99,4 +99,3 @@ jobs:
                   echo "SA: ${{ fromJson(needs.set-env.outputs.service_accounts) }}"
                   test=$(echo '${{ needs.set-env.outputs.contexts }}' | jq -r '.[]')
                   echo $test
-
