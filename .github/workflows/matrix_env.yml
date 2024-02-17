@@ -98,7 +98,7 @@ jobs:
                   echo "BUSINESS_UNITS_JSON: ${{ needs.set-env.outputs.business_units }}"
                   echo "Contexts: ${{ needs.set-env.outputs.contexts }}"
                   echo "SA: ${{ fromJson(needs.set-env.outputs.service_accounts) }}"
-                  BUSINESS_UNITS=$(echo $BUSINESS_UNITS_JSON | jq -r '.[]' | tr '\n' ' ')
-                  for BU in $BUSINESS_UNITS; do
+                  BUSINESS_UNITS_JSON="${{ needs.set-env.outputs.business_units }}"
+                  echo "$BUSINESS_UNITS_JSON" | jq -r '.[]' | while read BU; do
                       echo "BU: $BU"
                   done
