@@ -61,11 +61,7 @@ jobs:
                   echo "API Key Path: ${{ needs.set-env.outputs.apikey_path }}"
                   echo "BUSINESS_UNITS_JSON: ${{ needs.set-env.outputs.business_units }}"
                   echo "SA: ${{ fromJson(needs.set-env.outputs.service_accounts) }}"
-
-                  IFS=$'\n' read -r -d '' -a BUSINESS_UNITS_ARRAY <<< "$(echo '${{ needs.set-env.outputs.business_units }}' | jq -r '.[]')"
-
-                  # Boucle for sur le tableau Bash
-                  for BU in "${BUSINESS_UNITS_ARRAY[@]}"; do
+                  BUSINESS_UNITS_JSON='${{ needs.set-env.outputs.business_units }}'
+                  for BU in $(echo $BUSINESS_UNITS_JSON | jq -r '.[]'); do
                       echo "BU: $BU"
-                      # Ici, vous pouvez ajouter une autre boucle for imbriquée si nécessaire
                   done
