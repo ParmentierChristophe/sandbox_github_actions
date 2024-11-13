@@ -5,7 +5,7 @@ on:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, standard]
 
     outputs:
       version_to_deploy: ${{ steps.version.outputs.VERSION_TO_DEPLOY }}
@@ -21,7 +21,7 @@ jobs:
         id: get_changes
         run: |
           git diff --name-only HEAD^ HEAD > changed_files.txt
-          echo "::set-output name=changed_files::$(cat changed_files.txt)"
+          echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_ENV
 
   simulate_push_jfrog:
     needs: prepare
@@ -37,30 +37,31 @@ jobs:
         id: set_paths
         run: |
           if [ "${{ matrix.name }}" == "api" ]; then
-            echo "::set-output name=service_path::./api/"
+            echo "service_path=api/" >> $GITHUB_ENV
           elif [ "${{ matrix.name }}" == "docs" ]; then
-            echo "::set-output name=service_path::./docs/"
+            echo "service_path=docs/" >> $GITHUB_ENV
           fi
 
       - name: Check if service was modified
         id: check_modifications
         run: |
-          if grep -q "${{ steps.set_paths.outputs.service_path }}" <<< "${{ needs.prepare.outputs.changed_files }}"; then
+          if grep -q "^${service_path}" <<< "${{ needs.prepare.outputs.changed_files }}"; then
             echo "Changes detected for ${{ matrix.name }}"
-            echo "::set-output name=should_deploy::true"
+            echo "should_deploy=true" >> $GITHUB_ENV
           else
             echo "No changes detected for ${{ matrix.name }}"
-            echo "::set-output name=should_deploy::false"
-          fi
+            echo "should_deploy=false" >> $GITHUB_ENV
+        env:
+          service_path: ${{ steps.set_paths.outputs.service_path }}
 
       - name: Simulate building Docker image
-        if: steps.check_modifications.outputs.should_deploy == 'true'
+        if: env.should_deploy == 'true'
         run: |
           echo "Building Docker image for ${{ matrix.name }}"
           echo "This would execute: docker build -f ./apps/${{ matrix.name }}/Dockerfile ."
       
       - name: Simulate pushing Docker image to JFrog
-        if: steps.check_modifications.outputs.should_deploy == 'true'
+        if: env.should_deploy == 'true'
         run: |
           echo "Simulating push of Docker image for ${{ matrix.name }} to Docker"
           echo "Image name: ${{ matrix.name }}"
