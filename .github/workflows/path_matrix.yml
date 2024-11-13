@@ -22,7 +22,8 @@ jobs:
         run: |
           git diff --name-only HEAD^ HEAD > changed_files.txt
           echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_ENV
-          cat changed_files.txt  # Affichage des fichiers modifiés pour debug
+          echo "Changed files detected:"
+          cat changed_files.txt
 
   simulate_push_jfrog:
     needs: prepare
@@ -34,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set service paths
+      - name: Set service path
         id: set_paths
         run: |
           if [ "${{ matrix.name }}" == "api" ]; then
@@ -43,13 +44,18 @@ jobs:
             echo "service_path=docs/" >> $GITHUB_ENV
           fi
 
+      - name: Debug Paths and Files
+        run: |
+          echo "Service path for matrix ${matrix.name}: ${{ steps.set_paths.outputs.service_path }}"
+          echo "Changed files: ${{ needs.prepare.outputs.changed_files }}"
+
       - name: Check if service was modified
         id: check_modifications
         env:
           service_path: ${{ steps.set_paths.outputs.service_path }}
           changed_files: ${{ needs.prepare.outputs.changed_files }}
         run: |
-          if echo "$changed_files" | grep -qE "^$service_path"; then
+          if echo "$changed_files" | grep -q "$service_path"; then
             echo "Changes detected for ${{ matrix.name }}"
             echo "should_deploy=true" >> $GITHUB_ENV
           else
