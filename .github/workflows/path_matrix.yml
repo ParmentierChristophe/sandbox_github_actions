@@ -12,17 +12,19 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 2
 
       - name: Get changed files
         id: get_changes
+        shell: bash
         run: |
           git diff --name-only HEAD^ HEAD > changed_files.txt
-          echo "::set-output name=changed_files::$(cat changed_files.txt)"
           echo "Changed files detected:"
           cat changed_files.txt
+          # Définition de la sortie 'changed_files'
+          echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_OUTPUT
 
   simulate_push_jfrog:
     needs: prepare
@@ -36,43 +38,41 @@ jobs:
     steps:
       - name: Define service path
         id: define_path
+        shell: bash
         run: |
           if [ "${{ matrix.name }}" == "api" ]; then
-            echo "service_path=api/" >> $GITHUB_ENV
+            echo "service_path=api/" >> $GITHUB_OUTPUT
           elif [ "${{ matrix.name }}" == "docs" ]; then
-            echo "service_path=docs/" >> $GITHUB_ENV
+            echo "service_path=docs/" >> $GITHUB_OUTPUT
           fi
 
       - name: Display Paths and Changed Files
-        env:
-          service_path: ${{ steps.define_path.outputs.service_path }}
-          changed_files: ${{ needs.prepare.outputs.changed_files }}
+        shell: bash
         run: |
-          echo "Service path: $service_path"
-          echo "Changed files: $changed_files"
+          echo "Service path: ${{ steps.define_path.outputs.service_path }}"
+          echo "Changed files: ${{ needs.prepare.outputs.changed_files }}"
 
       - name: Check if service was modified
         id: check_modifications
-        env:
-          service_path: ${{ steps.define_path.outputs.service_path }}
-          changed_files: ${{ needs.prepare.outputs.changed_files }}
+        shell: bash
         run: |
-          if echo "$changed_files" | grep -q "$service_path"; then
+          echo "Checking if ${{ matrix.name }} has been modified..."
+          if echo "${{ needs.prepare.outputs.changed_files }}" | grep -q "${{ steps.define_path.outputs.service_path }}"; then
             echo "Changes detected for ${{ matrix.name }}"
-            echo "should_deploy=true" >> $GITHUB_ENV
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
           else
             echo "No changes detected for ${{ matrix.name }}"
-            echo "should_deploy=false" >> $GITHUB_ENV
+            echo "should_deploy=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Simulate building Docker image
-        if: env.should_deploy == 'true'
+        if: steps.check_modifications.outputs.should_deploy == 'true'
         run: |
           echo "Building Docker image for ${{ matrix.name }}"
           echo "This would execute: docker build -f ./apps/${{ matrix.name }}/Dockerfile ."
       
       - name: Simulate pushing Docker image to JFrog
-        if: env.should_deploy == 'true'
+        if: steps.check_modifications.outputs.should_deploy == 'true'
         run: |
           echo "Simulating push of Docker image for ${{ matrix.name }} to Docker"
           echo "Image name: ${{ matrix.name }}"
