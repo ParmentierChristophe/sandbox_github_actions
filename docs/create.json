@@ -1,6 +1,6 @@
 [
     {
-      "topic": "toto",
+      "topic": "topic-1",
       "replication-factor": 3,
       "partitions": 1,
       "policy": "compact",
