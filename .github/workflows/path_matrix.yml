@@ -21,10 +21,7 @@ jobs:
         id: get_changes
         run: |
           git diff --name-only HEAD^ HEAD > changed_files.txt
-          echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_ENV
-        # Output the list of changed files
-        shell: bash
-        run: echo "::set-output name=changed_files::$(cat changed_files.txt)"
+          echo "::set-output name=changed_files::$(cat changed_files.txt)"
 
   simulate_push_jfrog:
     needs: prepare
