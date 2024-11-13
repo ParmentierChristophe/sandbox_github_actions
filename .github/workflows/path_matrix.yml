@@ -1,0 +1,57 @@
+name: Deploy DEV (Simulation)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: [self-hosted, Linux, standard]
+
+    outputs:
+      version_to_deploy: ${{ steps.version.outputs.VERSION_TO_DEPLOY }}
+      changed_files: ${{ steps.get_changes.outputs.changed_files }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Get changed files
+        id: get_changes
+        run: |
+          git diff --name-only HEAD^ HEAD > changed_files.txt
+          echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_ENV
+
+  simulate_push_jfrog:
+    needs: prepare
+    strategy:
+      matrix:
+        name:
+          - 'api'
+          - 'docs'
+          
+    name: Simulate build and push for ${{ matrix.name }}
+
+    env:
+      SERVICE_PATHS: |
+        api=./api/
+        docs=./docs/
+
+    if: contains(env.changed_files, format('SERVICE_PATHS["{0}"]', matrix.name))
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Display service path for ${{ matrix.name }}
+        run: echo "Service path for ${{ matrix.name }} is ${SERVICE_PATHS[${{ matrix.name }}]}"
+
+      - name: Simulate building Docker image for ${{ matrix.name }}
+        run: |
+          echo "Building Docker image for ${{ matrix.name }}"
+          echo "This would execute: docker build -f ./apps/${{ matrix.name }}/Dockerfile ."
+      
+      - name: Simulate pushing Docker image to JFrog for ${{ matrix.name }}
+        run: |
+          echo "Simulating push of Docker image for ${{ matrix.name }} to Docker"
+          echo "Image name: ${{ matrix.name }}"
+          echo "Repository: docker"
