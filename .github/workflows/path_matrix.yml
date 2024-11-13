@@ -22,6 +22,9 @@ jobs:
         run: |
           git diff --name-only HEAD^ HEAD > changed_files.txt
           echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_ENV
+        # Output the list of changed files
+        shell: bash
+        run: echo "::set-output name=changed_files::$(cat changed_files.txt)"
 
   simulate_push_jfrog:
     needs: prepare
@@ -38,7 +41,8 @@ jobs:
         api=./api/
         docs=./docs/
 
-    if: contains(env.changed_files, format('SERVICE_PATHS["{0}"]', matrix.name))
+    # Updated condition to use `needs.prepare.outputs.changed_files`
+    if: contains(needs.prepare.outputs.changed_files, format('SERVICE_PATHS["{0}"]', matrix.name))
     runs-on: ubuntu-latest
 
     steps:
