@@ -27,31 +27,40 @@ jobs:
     needs: prepare
     strategy:
       matrix:
-        name:
-          - 'api'
-          - 'docs'
+        name: ['api', 'docs']
           
     name: Simulate build and push for ${{ matrix.name }}
-
-    env:
-      SERVICE_PATHS: |
-        api=./api/
-        docs=./docs/
-
-    # Updated condition to use `needs.prepare.outputs.changed_files`
-    if: contains(needs.prepare.outputs.changed_files, format('SERVICE_PATHS["{0}"]', matrix.name))
     runs-on: ubuntu-latest
 
     steps:
-      - name: Display service path for ${{ matrix.name }}
-        run: echo "Service path for ${{ matrix.name }} is ${SERVICE_PATHS[${{ matrix.name }}]}"
+      - name: Set service paths
+        id: set_paths
+        run: |
+          if [ "${{ matrix.name }}" == "api" ]; then
+            echo "::set-output name=service_path::./api/"
+          elif [ "${{ matrix.name }}" == "docs" ]; then
+            echo "::set-output name=service_path::./docs/"
+          fi
 
-      - name: Simulate building Docker image for ${{ matrix.name }}
+      - name: Check if service was modified
+        id: check_modifications
+        run: |
+          if grep -q "${{ steps.set_paths.outputs.service_path }}" <<< "${{ needs.prepare.outputs.changed_files }}"; then
+            echo "Changes detected for ${{ matrix.name }}"
+            echo "::set-output name=should_deploy::true"
+          else
+            echo "No changes detected for ${{ matrix.name }}"
+            echo "::set-output name=should_deploy::false"
+          fi
+
+      - name: Simulate building Docker image
+        if: steps.check_modifications.outputs.should_deploy == 'true'
         run: |
           echo "Building Docker image for ${{ matrix.name }}"
           echo "This would execute: docker build -f ./apps/${{ matrix.name }}/Dockerfile ."
       
-      - name: Simulate pushing Docker image to JFrog for ${{ matrix.name }}
+      - name: Simulate pushing Docker image to JFrog
+        if: steps.check_modifications.outputs.should_deploy == 'true'
         run: |
           echo "Simulating push of Docker image for ${{ matrix.name }} to Docker"
           echo "Image name: ${{ matrix.name }}"
