@@ -5,7 +5,7 @@ on:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, standard]
 
     outputs:
       version_to_deploy: ${{ steps.version.outputs.VERSION_TO_DEPLOY }}
@@ -44,15 +44,17 @@ jobs:
 
       - name: Check if service was modified
         id: check_modifications
+        env:
+          service_path: ${{ steps.set_paths.outputs.service_path }}
+          changed_files: ${{ needs.prepare.outputs.changed_files }}
         run: |
-          if grep -q "^${service_path}" <<< "${{ needs.prepare.outputs.changed_files }}"; then
+          if grep -q "^$service_path" <<< "$changed_files"; then
             echo "Changes detected for ${{ matrix.name }}"
             echo "should_deploy=true" >> $GITHUB_ENV
           else
             echo "No changes detected for ${{ matrix.name }}"
             echo "should_deploy=false" >> $GITHUB_ENV
-        env:
-          service_path: ${{ steps.set_paths.outputs.service_path }}
+          fi
 
       - name: Simulate building Docker image
         if: env.should_deploy == 'true'
