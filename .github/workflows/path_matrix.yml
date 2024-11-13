@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      version_to_deploy: ${{ steps.version.outputs.VERSION_TO_DEPLOY }}
       changed_files: ${{ steps.get_changes.outputs.changed_files }}
 
     steps:
@@ -24,6 +23,9 @@ jobs:
           echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_ENV
           echo "Changed files detected:"
           cat changed_files.txt
+        # Set the changed files as output
+        shell: bash
+        run: echo "::set-output name=changed_files::$(cat changed_files.txt)"
 
   simulate_push_jfrog:
     needs: prepare
@@ -34,50 +36,47 @@ jobs:
     name: Simulate build and push for ${{ matrix.name }}
     runs-on: ubuntu-latest
 
-    env:
-      MATRIX_NAME: ${{ matrix.name }}
-
     steps:
-      - name: Set service path
-        id: set_paths
+      - name: Define service path
+        id: define_path
         run: |
-          if [ "$MATRIX_NAME" == "api" ]; then
+          if [ "${{ matrix.name }}" == "api" ]; then
             echo "service_path=api/" >> $GITHUB_ENV
-          elif [ "$MATRIX_NAME" == "docs" ]; then
+          elif [ "${{ matrix.name }}" == "docs" ]; then
             echo "service_path=docs/" >> $GITHUB_ENV
           fi
 
-      - name: Debug Paths and Files
+      - name: Display Paths and Changed Files
         env:
-          service_path: ${{ steps.set_paths.outputs.service_path }}
+          service_path: ${{ steps.define_path.outputs.service_path }}
           changed_files: ${{ needs.prepare.outputs.changed_files }}
         run: |
-          echo "Service path for matrix $MATRIX_NAME: $service_path"
+          echo "Service path: $service_path"
           echo "Changed files: $changed_files"
 
       - name: Check if service was modified
         id: check_modifications
         env:
-          service_path: ${{ steps.set_paths.outputs.service_path }}
+          service_path: ${{ steps.define_path.outputs.service_path }}
           changed_files: ${{ needs.prepare.outputs.changed_files }}
         run: |
           if echo "$changed_files" | grep -q "$service_path"; then
-            echo "Changes detected for $MATRIX_NAME"
+            echo "Changes detected for ${{ matrix.name }}"
             echo "should_deploy=true" >> $GITHUB_ENV
           else
-            echo "No changes detected for $MATRIX_NAME"
+            echo "No changes detected for ${{ matrix.name }}"
             echo "should_deploy=false" >> $GITHUB_ENV
           fi
 
       - name: Simulate building Docker image
         if: env.should_deploy == 'true'
         run: |
-          echo "Building Docker image for $MATRIX_NAME"
-          echo "This would execute: docker build -f ./apps/$MATRIX_NAME/Dockerfile ."
+          echo "Building Docker image for ${{ matrix.name }}"
+          echo "This would execute: docker build -f ./apps/${{ matrix.name }}/Dockerfile ."
       
       - name: Simulate pushing Docker image to JFrog
         if: env.should_deploy == 'true'
         run: |
-          echo "Simulating push of Docker image for $MATRIX_NAME to Docker"
-          echo "Image name: $MATRIX_NAME"
+          echo "Simulating push of Docker image for ${{ matrix.name }} to Docker"
+          echo "Image name: ${{ matrix.name }}"
           echo "Repository: docker"
