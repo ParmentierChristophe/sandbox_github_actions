@@ -36,9 +36,11 @@ jobs:
             fi
           done
           UNIQUE_SERVICES=$(echo $SERVICES | tr ' ' '\n' | sort -u | tr '\n' ' ')
-          echo "Modified services: $UNIQUE_SERVICES"
-          echo "modified_services=$UNIQUE_SERVICES" >> $GITHUB_OUTPUT
-
+          # Convert to JSON array format
+          UNIQUE_SERVICES_JSON=$(echo "[\"$(echo $UNIQUE_SERVICES | tr ' ' '\",\"')\"]")
+          echo "Modified services: $UNIQUE_SERVICES_JSON"
+          echo "modified_services=$UNIQUE_SERVICES_JSON" >> $GITHUB_OUTPUT
+          
   simulate_push_jfrog:
     needs: prepare
     runs-on: ubuntu-latest
