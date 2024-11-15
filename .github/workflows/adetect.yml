@@ -73,7 +73,7 @@ jobs:
         if: steps.check_dockerfile.outputs.dockerfile_exists == 'true'
         run: |
           echo "Pushing Docker image for ${{ matrix.service }} to JFrog"
-          docker push your-company.jfrog.io/docker-repo/${{ matrix.service }}:latest
+          # docker push your-company.jfrog.io/docker-repo/${{ matrix.service }}:latest
 
       - name: Skip Docker Build and Push
         if: steps.check_dockerfile.outputs.dockerfile_exists == 'false'
