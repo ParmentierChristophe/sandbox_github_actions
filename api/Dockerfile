@@ -1,3 +1,3 @@
 FROM alpine:latest
 
-CMD echo "Hello, world api!"
+CMD echo "api"
