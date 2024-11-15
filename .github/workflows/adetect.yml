@@ -1,0 +1,78 @@
+name: Deploy DEV (Simulation)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      modified_services: ${{ steps.detect_modified_services.outputs.modified_services }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Get Changed Files
+        id: get_changes
+        run: |
+          echo "Detecting changed files..."
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          echo "Changed files detected:"
+          echo "$CHANGED_FILES"
+          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+
+      - name: Detect Modified Services
+        id: detect_modified_services
+        run: |
+          echo "Detecting modified services..."
+          SERVICES=""
+          for FILE in ${{ steps.get_changes.outputs.changed_files }}; do
+            SERVICE=$(echo "$FILE" | cut -d'/' -f1)
+            if [[ "$SERVICE" != "" ]] && [[ -d "$SERVICE" ]]; then
+              SERVICES="${SERVICES} $SERVICE"
+            fi
+          done
+          UNIQUE_SERVICES=$(echo $SERVICES | tr ' ' '\n' | sort -u | tr '\n' ' ')
+          echo "Modified services: $UNIQUE_SERVICES"
+          echo "modified_services=$UNIQUE_SERVICES" >> $GITHUB_OUTPUT
+
+  simulate_push_jfrog:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.prepare.outputs.modified_services) }}
+
+    name: Simulate build and push for ${{ matrix.service }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Check if Dockerfile Exists
+        id: check_dockerfile
+        run: |
+          if [ -f "${{ matrix.service }}/Dockerfile" ]; then
+            echo "dockerfile_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "dockerfile_exists=false" >> $GITHUB_OUTPUT
+
+      - name: Simulate Building Docker Image
+        if: steps.check_dockerfile.outputs.dockerfile_exists == 'true'
+        run: |
+          echo "Building Docker image for ${{ matrix.service }}"
+          docker build -t your-company.jfrog.io/docker-repo/${{ matrix.service }}:latest ${{ matrix.service }}
+
+      - name: Simulate Pushing Docker Image to JFrog
+        if: steps.check_dockerfile.outputs.dockerfile_exists == 'true'
+        run: |
+          echo "Pushing Docker image for ${{ matrix.service }} to JFrog"
+          docker push your-company.jfrog.io/docker-repo/${{ matrix.service }}:latest
+
+      - name: Skip Docker Build and Push
+        if: steps.check_dockerfile.outputs.dockerfile_exists == 'false'
+        run: |
+          echo "No Dockerfile found for ${{ matrix.service }}. Skipping build and push."
