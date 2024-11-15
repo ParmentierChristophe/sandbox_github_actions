@@ -1,3 +1,3 @@
 FROM alpine:latest
 
-CMD echo "Hello, world from Docker!"
+CMD echo "Hello, world api!"
