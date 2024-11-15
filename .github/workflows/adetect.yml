@@ -1,6 +1,9 @@
-name: Deploy DEV (Simulation)
+name: Deploy DEV 2 (Simulation)
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -8,18 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       modified_services: ${{ steps.detect_modified_services.outputs.modified_services }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Get Changed Files
         id: get_changes
         run: |
           echo "Detecting changed files..."
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})
           echo "Changed files detected:"
           echo "$CHANGED_FILES"
           echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
@@ -61,7 +64,6 @@ jobs:
             echo "dockerfile_exists=true" >> $GITHUB_OUTPUT
           else
             echo "dockerfile_exists=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Simulate Building Docker Image
         if: steps.check_dockerfile.outputs.dockerfile_exists == 'true'
