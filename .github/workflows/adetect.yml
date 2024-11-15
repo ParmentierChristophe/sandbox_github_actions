@@ -61,6 +61,7 @@ jobs:
             echo "dockerfile_exists=true" >> $GITHUB_OUTPUT
           else
             echo "dockerfile_exists=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Simulate Building Docker Image
         if: steps.check_dockerfile.outputs.dockerfile_exists == 'true'
